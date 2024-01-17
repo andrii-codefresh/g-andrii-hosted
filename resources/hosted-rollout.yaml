@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hosted-rollout
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  project: default
+  source:
+    path: canary-rollout
+    repoURL: https://github.com/alina-codefresh/rollouts-demo.git
+    targetRevision: 1.23k8s
+  destination:
+    name: arn-aws-eks-us-east-1-882458141806-cluster-andrii
+    namespace: hosted-rollout
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - PrunePropagationPolicy=foreground
+      - Replace=false
+      - PruneLast=false
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=false
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=false
